@@ -11,8 +11,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.swing.*;
-
 public class BingoCommands implements CommandExecutor {
     /*
     Verwaltet alle Eingabemöglichkeiten nach "/bingo" (start, help, team und top).
