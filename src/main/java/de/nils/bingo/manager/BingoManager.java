@@ -1,12 +1,15 @@
 package de.nils.bingo.manager;
 
+import de.nils.bingo.Main;
 import de.nils.bingo.scoreboard.BingoScoreboard;
 import de.nils.bingo.utils.Team;
 import de.nils.bingo.utils.Timer;
 import org.bukkit.*;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class BingoManager {
     private TeamManager teamManager;
@@ -25,73 +28,111 @@ public class BingoManager {
         itemManger = new ItemManger();
         timer = new Timer();
         tablistManger = new TablistManger();
+        update();
     }
 
-    /*
-    Die Methode wird aufgerufen, wenn das Spiel startet. Die GameState wird am Ende auf "INGAME" gesetzt.
-    Die Items, die gefunden werden müssen werden durch einen Methodenaufruf am Objekt itemManager erzeugt.
-    Für jeden Spieler wird das Scoreboard aktualisiert, um die Platzierung und die zu findenden Items anzuzeigen.
-    Der Timer zur Erfassung der Rundenzeit wird gestartet.
-    Alle Spieler, die kein Team ausgewählt haben werden in den GameMode "Spectator" versetzt.
-     */
+    public void playerJoinEvent(PlayerJoinEvent event) {
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
+            joinOnStart(event);
+        } else {
+            joinInGame(event);
+        }
+        tablistManger.setTablist(event.getPlayer());
+        updateUI();
+    }
+
+    private void joinOnStart(PlayerJoinEvent event) {
+        event.getPlayer().setGameMode(GameMode.SURVIVAL);
+        event.setJoinMessage(event.getPlayer().getName() + ChatColor.GREEN + " ist nun auch dabei!");
+        if (teamManager.getTeamByPlayer(event.getPlayer()) == null) {
+            teamManager.addPlayerToTeam(event.getPlayer(), teamManager.getSpectators());
+        }
+        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
+    }
+
+    private void joinInGame(PlayerJoinEvent event) {
+        if (teamManager.getTeamByPlayer(event.getPlayer()) != null
+                && !teamManager.getSpectators().containsPlayer(event.getPlayer())) {
+
+            event.getPlayer().sendMessage("Anzahl Memeber in deinem Team aktuellen Team:" + teamManager.getTeamByPlayer(event.getPlayer()).getPlayers().size());
+
+            //Eigentlich unnötig, weil man beim Verlassen sein Team nicht verlässt
+            //teamManager.addPlayerToTeam(event.getPlayer(), teamManager.getTeamByPlayer(event.getPlayer()).getID());
+
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            event.setJoinMessage(event.getPlayer().getName() + ChatColor.GREEN + " ist zurückgekommen!");
+            Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
+
+        } else {
+            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+            event.getPlayer().sendMessage(ChatColor.RED + "Da du während der Spielphase beigetreten bist, kannst du erst wieder in der nächsten Runde teilnehmen!");
+        }
+    }
+
+    public void update() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                switch (getGameState()) {
+                    case START:
+                        break;
+                    case INGAME:
+                        itemManger.run();
+                        break;
+                    case END:
+
+                        break;
+                }
+                timer.run();
+            }
+        }.runTaskTimer(Main.getInstance(), 20, 20);
+    }
+
+    public void updateUI(){
+        Bukkit.getOnlinePlayers().forEach(player -> new BingoScoreboard(player));
+        tablistManger.setAllPlayerTeams();
+    }
+
     public void startGame() {
         itemManger.start();
-
+        timer.setRunning(true);
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.closeInventory();
             player.getInventory().clear();
             player.setGameMode(GameMode.SURVIVAL);
-            player.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "Die Bingo-Runde beginnt! Viel Erfolg!");
+            player.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "Die Runde beginnt. Viel Erfolg!");
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
-            new BingoScoreboard(player).createInGameScoreboard();
         });
-        timer.setRunning(true);
-
-        for (Player cur : getTeamManager().getTeamByID("t0").getPlayers()) {
-            if (cur != null) {
-                cur.setGameMode(GameMode.SPECTATOR);
-                cur.sendMessage("Da du kein Team gewählt hast, bist du nun Spectator!");
-            }
+        for (Player cur : getTeamManager().getSpectators().getPlayers()) {
+            cur.setGameMode(GameMode.SPECTATOR);
+            cur.sendMessage("Da du kein Team gewählt hast, bist du nun Spectator!");
         }
         gameState = BingoGameState.INGAME;
+        updateUI();
     }
 
-    /*
-    Die Methode wird aufgerufen, wenn das Spiel endet. Die GameState wird am Ende auf "END" gesetzt.
-    Der Timer wird gestoppt.
-    Alle Spieler werden zum Spawn teleportiert.
-    Das Scoreboard aller Spieler wird aktualisiert.
-    Das Siegerteam wird bekannt gegeben und Feuerwerk wird gezündet :)
-     */
     public void endGame(Team curTeam) {
         timer.setRunning(false);
         Bukkit.getOnlinePlayers().forEach(player -> {
-            new BingoScoreboard(player).createEndScoreboard();
-
             Location spawn = Bukkit.getServer().getWorld("world").getSpawnLocation();
             player.teleport(spawn);
             player.getInventory().clear();
-            player.sendTitle(ChatColor.GOLD + "Team #" + curTeam.getID().substring(1) + " hat Bingo gewonnen!", "by https://github.com/nils3005");
+            player.sendTitle(ChatColor.GOLD + "Team #" + getTeamManager().getIdByTeam(curTeam).substring(1) + " hat Bingo gewonnen!", "by https://github.com/nils3005");
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
             player.sendMessage(ChatColor.GREEN + "____________________________________________________");
-            player.sendMessage(ChatColor.BOLD + "Team #" + curTeam.getID().substring(1) + " hat Bingo gewonnen! Herzlichen Glückwunsch!");
+            player.sendMessage(ChatColor.BOLD + "Team #" + getTeamManager().getIdByTeam(curTeam).substring(1) + " hat gewonnen. Herzlichen Glückwunsch!");
             player.sendMessage(ChatColor.BOLD + "Benötigte Zeit: " + timer.getTime());
             player.sendMessage(ChatColor.GREEN + "____________________________________________________");
             createFirework(player);
         });
         gameState = BingoGameState.END;
+        updateUI();
     }
 
     /*
     Erzeugt das Feuerwerk für die Methode "endGame".
      */
-    private void createFirework(Player player) {
-        Firework fw = player.getWorld().spawn(player.getLocation(), Firework.class);
-        FireworkMeta fireworkMeta = fw.getFireworkMeta();
-        fireworkMeta.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withColor(Color.BLUE).with(FireworkEffect.Type.BALL_LARGE).withFlicker().build());
-        fireworkMeta.setPower(1);
-        fw.setFireworkMeta(fireworkMeta);
-    }
+
 
     /*
     Die innere "Enum-Klasse" gibt die aktuelle GameState an.
@@ -99,7 +140,15 @@ public class BingoManager {
     public enum BingoGameState {
         START,
         INGAME,
-        END,
+        END;
+    }
+
+    private void createFirework(Player player) {
+        Firework fw = player.getWorld().spawn(player.getLocation(), Firework.class);
+        FireworkMeta fireworkMeta = fw.getFireworkMeta();
+        fireworkMeta.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withColor(Color.BLUE).with(FireworkEffect.Type.BALL_LARGE).withFlicker().build());
+        fireworkMeta.setPower(1);
+        fw.setFireworkMeta(fireworkMeta);
     }
 
     public BingoGameState getGameState() {

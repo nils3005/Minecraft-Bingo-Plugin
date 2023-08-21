@@ -19,9 +19,6 @@ public final class Main extends JavaPlugin {
     private static Main instance;
     private static BingoManager bingoManager;
 
-    public static final ChatColor t1Color = ChatColor.YELLOW;
-    public static final ChatColor t2Color = ChatColor.BLUE;
-
     /*
     Lädt für jeden Neustart des Servers eine neue Welt mit zufälligem Seed.
     Passt die GameRule an, dass PvP deaktiviert ist, dass Inventar nach dem Tod behalten wird und keine Advancements im Chat angezeigt werden.
@@ -52,11 +49,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-
         bingoManager = new BingoManager();
-
         getCommand("bingo").setExecutor(new BingoCommands());
-
         Bukkit.getPluginManager().registerEvents(new Listeners(), this);
     }
 

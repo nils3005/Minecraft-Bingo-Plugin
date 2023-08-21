@@ -12,7 +12,10 @@ public class TablistManger {
     Legt das Design der Tabliste fest.
      */
     public void setTablist(Player player) {
-        player.setPlayerListHeaderFooter("" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH + "                 " + ChatColor.DARK_GRAY + "[ " + ChatColor.GREEN + "Bingo" + ChatColor.DARK_GRAY + " ]" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH + "                 ", "by https://github.com/nils3005");
+        player.setPlayerListHeaderFooter("" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH
+                + "                 " + ChatColor.DARK_GRAY + "[ " + ChatColor.GREEN + "Bingo"
+                + ChatColor.DARK_GRAY + " ]" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH
+                + "                 ", "by https://github.com/nils3005");
     }
 
     /*
@@ -27,35 +30,25 @@ public class TablistManger {
      */
     public void setPlayerTeams(Player player) {
         Scoreboard sb = player.getScoreboard();
-        Team t0 = sb.getTeam("2teamUndef");
-        if (t0 == null) {
-            t0 = sb.registerNewTeam("2teamUndef");
+        Team spectator = sb.getTeam("9spectator");
+        if (spectator == null) {
+            spectator = sb.registerNewTeam("9spectator");
         }
-
-        Team t1 = sb.getTeam("0team1");
-        if (t1 == null) {
-            t1 = sb.registerNewTeam("0team1");
+        spectator.setPrefix(ChatColor.GRAY + "Team -" + ChatColor.RESET + " | ");
+        if (Main.getBingoManger().getTeamManager().getTeamByPlayer(player) == Main.getBingoManger().getTeamManager().getSpectators()) {
+            spectator.addEntry(player.getName());
         }
-
-        Team t2 = sb.getTeam("1team2");
-        if (t2 == null) {
-            t2 = sb.registerNewTeam("1team2");
-        }
-
-        t0.setPrefix(ChatColor.GRAY + "Team -" + ChatColor.RESET + " | ");
-
-        t1.setPrefix(Main.t1Color + "Team #1" + ChatColor.RESET + " | ");
-
-        t2.setPrefix(Main.t2Color + "Team #2" + ChatColor.RESET + " | ");
-
-        for (Player curr : Bukkit.getOnlinePlayers()) {
-            if (Main.getBingoManger().getTeamManager().getTeamByPlayer(curr.getPlayer()).getID().equals("t1")) {
-                t1.addEntry(curr.getName());
-            } else if (Main.getBingoManger().getTeamManager().getTeamByPlayer(curr.getPlayer()).getID().equals("t2")) {
-                t2.addEntry(curr.getName());
-            } else {
-                t0.addEntry(curr.getName());
+        int i = 0;
+        for (de.nils.bingo.utils.Team cur : Main.getBingoManger().getTeamManager().getTeams()) {
+            Team team = sb.getTeam(i + "t" + (i + 1));
+            if (team == null) {
+                team = sb.registerNewTeam(i + "t" + (i + 1));
             }
+            team.setPrefix("Team #" + (i + 1) + " | ");
+            for (Player entry : cur.getPlayers()) {
+                team.addEntry(entry.getName());
+            }
+            i++;
         }
     }
 }

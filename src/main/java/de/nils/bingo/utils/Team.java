@@ -5,14 +5,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class Team {
-    private String id;
     private ArrayList<Player> members = new ArrayList<Player>();
 
-    /*
-    Ein Team kennt eine eindeutige ID und seine Member (Player)
-     */
-    public Team(String name) {
-        this.id = name;
+    public Team() {
     }
 
     /*
@@ -33,7 +28,13 @@ public class Team {
         return members;
     }
 
-    public String getID() {
-        return id;
+    public boolean containsPlayer(Player player) {
+        return members.contains(player);
+    }
+
+    public void removePlayer(Player player){
+        if (members.contains(player)){
+            members.remove(player);
+        }
     }
 }

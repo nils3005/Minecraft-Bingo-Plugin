@@ -22,33 +22,27 @@ public class Timer {
         min = 0;
         hr = 0;
         running = false;
-        run();
     }
 
     /*
     Die Methode aktualisiert die Zeit, falls der Timer läuft.
      */
-    private void run() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                sendActionBar();
-                if (!running) {
-                    return;
-                }
-                if (sec == 59) {
-                    sec = 0;
-                    if (min == 59) {
-                        hr++;
-                        min = 0;
-                    } else {
-                        min++;
-                    }
-                } else {
-                    sec++;
-                }
+    public void run() {
+        sendActionBar();
+        if (!running) {
+            return;
+        }
+        if (sec == 59) {
+            sec = 0;
+            if (min == 59) {
+                hr++;
+                min = 0;
+            } else {
+                min++;
             }
-        }.runTaskTimer(Main.getInstance(), 20, 20);
+        } else {
+            sec++;
+        }
     }
 
     /*
@@ -59,16 +53,16 @@ public class Timer {
             if (running) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GOLD.toString() + ChatColor.BOLD + getTime()));
             } else {
-                if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START){
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Willkommen bei Bingo! /bingo help für Hilfe"));
-                }else if(Main.getBingoManger().getGameState() == BingoManager.BingoGameState.END){
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Für eine weitere Runde muss ein Admin den Server neustarten"));
+                if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Willkommen! /bingo help für Hilfe"));
+                } else if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.END) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Server neustarten für neue Runde!"));
                 }
             }
         }
     }
 
-    public void setRunning(boolean running){
+    public void setRunning(boolean running) {
         this.running = running;
     }
 

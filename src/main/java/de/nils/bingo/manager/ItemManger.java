@@ -26,74 +26,47 @@ public class ItemManger {
      */
     public void start() {
         startItems = ItemSelector.getGameItems();
-        for (Team team : Main.getBingoManger().getTeamManager().getAllTeams()) {
+        for (Team team : Main.getBingoManger().getTeamManager().getTeams()) {
             teamItems.put(team, (ArrayList<Material>) startItems.clone());
         }
-        run();
     }
 
     /*
-    Es wird ein neues BukkitRunnable erstellt.
-    Für jeden Spieler auf dem Server muss sekündlich geprüft werden, ob ein Item aus den gesuchten Items
+    Für jeden Spieler auf dem Server muss geprüft werden, ob ein Item aus den gesuchten Items
     aufgesammelt wurde.
     Falls ein Item den noch offenen Items des Teams entspricht, wird die Methode foundItem aufgerufen.
-    Falls ein Team keine Items mehr finden muss, wird die Methode "endGame" im BingoManager aufgerufen,
-    was die Runde beendet.
      */
     public void run() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.INGAME) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        Team curTeam = Main.getBingoManger().getTeamManager().getTeamByPlayer(player);
-                        for (ItemStack slot : player.getInventory().getContents()) {
-                            if (slot != null) {
-                                ArrayList<Material> itemsByTeam = getItemsFromTeam(curTeam); //zu findende Items
-                                if (itemsByTeam.contains(slot.getType())) {
-                                    itemsByTeam.remove(slot.getType());
-                                    foundItem(curTeam, slot.getType(), player);
-                                    if (itemsByTeam.size() == 0) {
-                                        Main.getBingoManger().endGame(curTeam);
-                                    }
-                                }
-                            }
-                        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Team curTeam = Main.getBingoManger().getTeamManager().getTeamByPlayer(player);
+            for (ItemStack slot : player.getInventory().getContents()) {
+                if (slot != null) {
+                    ArrayList<Material> itemsByTeam = getItemsFromTeam(curTeam); //zu findende Items
+                    if (itemsByTeam.contains(slot.getType())) {
+                        itemsByTeam.remove(slot.getType());
+                        foundItem(curTeam, slot.getType(), player);
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 20, 20);
+        }
     }
 
     /*
-    Die Methode wird aufgerufen, um zu signalisieren, dass ein offenes Item des Teams aufgesammelt wurde.
+    Die Methode wird aufgerufen, wenn ein offenes Item des Teams aufgesammelt wurde.
     Es wird angegeben, um welches Item es sich handelt, wer es gefunden hat und wie viele Items übrig sind.
     Schließlich wird das Scoreboard aktualisiert.
      */
     public void foundItem(Team team, Material material, Player player) {
-        //Wie viele Items übrig sind
         int amountOfItemsLeft = 9 - getItemsFromTeam(team).size();
-        //Teamnachricht und für anderes Team eine Broadcastnachricht
         Main.getBingoManger().getTeamManager().getPlayersByTeam(team).forEach(curPlayer -> {
             if (Bukkit.getPlayer(curPlayer.getName()) != null) {
                 curPlayer.sendTitle(ChatColor.GOLD + Utils.getItemName(material), " wurde gefunden!");
                 curPlayer.playSound(curPlayer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             }
         });
-        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " aus Team " + team.getID().substring(1) + " hat " + Utils.getItemName(material) + " gefunden! " + amountOfItemsLeft + " / 9");
-
-        //Prüfen, ob notwendig
-        Main.getBingoManger().getTeamManager().getAllTeams().forEach(tempTeam -> updateScoreboard(tempTeam));
-    }
-
-    /*
-    Da sich die Rundeninformationen geändert haben, muss auch das Scoreboard jedes Spielers aktualisiert werden.
-    Dies wird hier sichergestellt.
-     */
-    public void updateScoreboard(Team team) {
-        ArrayList<Player> players = team.getPlayers();
-        for (Player player : players) {
-            new BingoScoreboard(player).createInGameScoreboard();
+        Bukkit.broadcastMessage(player.getName() + " aus Team " + Main.getBingoManger().getTeamManager().getIdByTeam(team) + " hat " + Utils.getItemName(material) + " gefunden! " + amountOfItemsLeft + " / 9");
+        if (amountOfItemsLeft == 0){
+            Main.getBingoManger().endGame(team);
         }
     }
 
@@ -105,7 +78,7 @@ public class ItemManger {
     public int getRankingPosition(Team team) {
         int paramTeamItemAmount = 9 - getItemsFromTeam(team).size();
         int pos = 1;
-        for (Team curTeam : Main.getBingoManger().getTeamManager().getAllTeams()) {
+        for (Team curTeam : Main.getBingoManger().getTeamManager().getTeams()) {
             int curItemAmount = 9 - Main.getBingoManger().getItemManger().getItemsFromTeam(curTeam).size();
             if (curItemAmount > paramTeamItemAmount) {
                 pos++;
