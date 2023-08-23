@@ -25,6 +25,7 @@ public class BingoManager {
     private static Timer timer;
     private BingoGameState gameState;
     private TablistManger tablistManger;
+    private int time = 5;
 
     /*
     Legt die GameState fest (zu Beginn: START).
@@ -67,7 +68,7 @@ public class BingoManager {
         i.setItemMeta(im);
         player.getInventory().setItem(0, i);
 
-        if (player.isOp()){
+        if (player.isOp()) {
             ItemStack itemStack = new ItemStack(Material.LIME_DYE);
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(ChatColor.GOLD + "Start");
@@ -92,9 +93,9 @@ public class BingoManager {
                 inventory.setItem(entry.getKey(), entry.getValue());
             }
             event.getPlayer().openInventory(inventory);
-        } else if(event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Start")){
+        } else if (event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Start")) {
             if (gameState == BingoGameState.START && event.getPlayer().isOp()) {
-                startGame();
+                startCountDown();
             } else {
                 event.getPlayer().sendMessage(ChatColor.RED + "Die Runde wurde bereits gestartet!");
             }
@@ -102,7 +103,7 @@ public class BingoManager {
     }
 
     public void inventoryClickEvent(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals(ChatColor.GOLD + "Teamauswahl")){
+        if (event.getView().getTitle().equals(ChatColor.GOLD + "Teamauswahl")) {
             event.setCancelled(true);
             String teamId = event.getCurrentItem().getItemMeta().getDisplayName().substring(6);
             Player player = (Player) event.getWhoClicked();
@@ -134,6 +135,7 @@ public class BingoManager {
             public void run() {
                 switch (gameState) {
                     case START:
+
                         break;
                     case INGAME:
                         itemManger.run();
@@ -168,6 +170,26 @@ public class BingoManager {
             }
         });
         tablistManger.setAllPlayerTeams();
+    }
+
+    private void startCountDown() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    player.setLevel(time);
+                    player.setExp(time / 5f);
+                    player.sendMessage(ChatColor.GOLD + "Runde beginnt in " + time + " Sekunde(n)!");
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
+                });
+                if (time == 0) {
+                    startGame();
+                    cancel();
+                    return;
+                }
+                time--;
+            }
+        }.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
     public void startGame() {

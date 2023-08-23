@@ -15,6 +15,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
 public class Listeners implements Listener {
+    /*
+    Verwaltet das JoinEvent von einem Spieler.
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Main.getBingoManger().playerJoinEvent(event);
@@ -30,6 +33,9 @@ public class Listeners implements Listener {
         }
     }
 
+    /*
+    Verwaltet die Interaktion mit einem Item.
+     */
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getItem() != null) {
@@ -37,6 +43,9 @@ public class Listeners implements Listener {
         }
     }
 
+    /*
+    Verwaltet die Interaktion in einem Inventar.
+     */
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getCurrentItem() != null) {
@@ -54,6 +63,9 @@ public class Listeners implements Listener {
         }
     }
 
+    /*
+    Verhindert, dass Spieler außerhalb der Spielphase Blöcke droppen können.
+     */
     @EventHandler
     public void onDropBlock(PlayerDropItemEvent event) {
         if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
@@ -61,6 +73,9 @@ public class Listeners implements Listener {
         }
     }
 
+    /*
+    Verhindert, dass Spieler außerhalb der Spielphase Blöcke setzen können.
+     */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
@@ -70,20 +85,13 @@ public class Listeners implements Listener {
 
     /*
     Verhindert, dass Spieler vor Rundenstart vom Spawn weglaufen können.
-
+    */
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst dich erst bewegen, sobald die Runde startet!");
             event.setCancelled(true);
         }
-    }
-
-     */
-
-    @EventHandler
-    public void discoverRecipe(PlayerRecipeDiscoverEvent event) {
-        event.setCancelled(true);
     }
 
     /*
@@ -100,7 +108,7 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        event.setQuitMessage(ChatColor.WHITE + event.getPlayer().getName() + " hat uns leider verlassen.");
+        event.setQuitMessage(ChatColor.GREEN + event.getPlayer().getName() + " hat uns leider verlassen.");
     }
 
     /*
