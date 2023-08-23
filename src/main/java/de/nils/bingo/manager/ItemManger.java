@@ -56,15 +56,14 @@ public class ItemManger {
     Es wird angegeben, um welches Item es sich handelt, wer es gefunden hat und wie viele Items übrig sind.
      */
     public void foundItem(Team team, Material material, Player player) {
-        int amountOfItemsLeft = getItemsFromTeam(team).size();
         Main.getBingoManger().getTeamManager().getPlayersByTeam(team).forEach(curPlayer -> {
             if (Bukkit.getPlayer(curPlayer.getName()) != null) {
                 curPlayer.sendTitle(ChatColor.GOLD + Utils.getItemName(material), " wurde gefunden!");
                 curPlayer.playSound(curPlayer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             }
         });
-        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " aus Team " + Main.getBingoManger().getTeamManager().getIdByTeam(team) + " hat " + Utils.getItemName(material) + " gefunden! " + amountOfItemsLeft + " / 9");
-        if (amountOfItemsLeft == 0) Main.getBingoManger().endGame(team);
+        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " aus Team " + Main.getBingoManger().getTeamManager().getIdByTeam(team) + " hat " + Utils.getItemName(material) + " gefunden! " + (9 - getItemsFromTeam(team).size()) + " / 9");
+        if (getItemsFromTeam(team).size() == 0) Main.getBingoManger().endGame(team);
         Main.getBingoManger().updateUI();
     }
 

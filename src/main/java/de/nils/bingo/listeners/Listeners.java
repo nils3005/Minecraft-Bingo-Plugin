@@ -6,6 +6,7 @@ import org.bukkit.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -25,6 +26,16 @@ public class Listeners implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
+            event.setCancelled(true);
+        }
+    }
+
+    /*
+    Spieler können nur in der Spielphase Schaden erleiden.
+     */
+    @EventHandler
+    public void onPlayerDamageOnStart(EntityDamageEvent event){
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME){
             event.setCancelled(true);
         }
     }
