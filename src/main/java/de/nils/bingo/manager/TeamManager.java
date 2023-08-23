@@ -90,4 +90,30 @@ public class TeamManager {
     public Team getSpectators(){
         return spectators;
     }
+
+    public Team getTeamById(String number) {
+        return teams.get(number);
+    }
+
+    public boolean getTeamByPlayerName(Player player) {
+        for (Team team : teams.values()) {
+            for (Player member : team.getPlayers()) {
+                if (member.getName().equals(player.getName())){
+                    team.removePlayer(member);
+                    team.addPlayer(player);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void removeSpectatorInstance(Player player){
+        for (Player member : spectators.getPlayers()) {
+            if (member.getName().equals(player.getName())){
+                spectators.removePlayer(member);
+                spectators.addPlayer(player);
+            }
+        }
+    }
 }

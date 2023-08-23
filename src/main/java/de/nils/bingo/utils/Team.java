@@ -3,10 +3,12 @@ package de.nils.bingo.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Team {
-    private ArrayList<Player> members = new ArrayList<Player>();
+    private ArrayList<Player> members = new ArrayList<>();
 
     public Team() {
     }

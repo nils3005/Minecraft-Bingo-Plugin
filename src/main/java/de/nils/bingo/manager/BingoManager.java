@@ -25,7 +25,7 @@ public class BingoManager {
     private static Timer timer;
     private BingoGameState gameState;
     private TablistManger tablistManger;
-    private int time = 5;
+    private int countdown = 5;
 
     /*
     Legt die GameState fest (zu Beginn: START).
@@ -58,6 +58,20 @@ public class BingoManager {
         }
         giveLobbyitems(event.getPlayer());
         Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
+    }
+
+    private void joinInGame(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        teamManager.removeSpectatorInstance(player);
+        if (teamManager.getTeamByPlayerName(player)) {
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            event.setJoinMessage(event.getPlayer().getName() + ChatColor.GREEN + " ist zurückgekommen!");
+            Bukkit.getOnlinePlayers().forEach(temp -> temp.playSound(temp.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
+        } else {
+            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+            event.setJoinMessage(ChatColor.GREEN + event.getPlayer().getName() + " schaut nun zu!");
+            event.getPlayer().sendMessage(ChatColor.RED + "Da du während der Spielphase beigetreten bist, kannst du erst wieder in der nächsten Runde teilnehmen!");
+        }
     }
 
     private void giveLobbyitems(Player player) {
@@ -105,27 +119,8 @@ public class BingoManager {
     public void inventoryClickEvent(InventoryClickEvent event) {
         if (event.getView().getTitle().equals(ChatColor.GOLD + "Teamauswahl")) {
             event.setCancelled(true);
-            String teamId = event.getCurrentItem().getItemMeta().getDisplayName().substring(6);
-            Player player = (Player) event.getWhoClicked();
-            addPlayerToTeam(player, teamId);
+            addPlayerToTeam((Player) event.getWhoClicked(), event.getCurrentItem().getItemMeta().getDisplayName().substring(6));
             event.getView().close();
-        }
-    }
-
-    private void joinInGame(PlayerJoinEvent event) {
-        if (teamManager.getTeamByPlayer(event.getPlayer()) != null
-                && !teamManager.getSpectators().containsPlayer(event.getPlayer())) {
-
-            //Eigentlich unnötig, weil man beim Verlassen sein Team nicht verlässt
-            //teamManager.addPlayerToTeam(event.getPlayer(), teamManager.getTeamByPlayer(event.getPlayer()).getID());
-
-            event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            event.setJoinMessage(event.getPlayer().getName() + ChatColor.GREEN + " ist zurückgekommen!");
-            Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
-
-        } else {
-            event.getPlayer().setGameMode(GameMode.SPECTATOR);
-            event.getPlayer().sendMessage(ChatColor.RED + "Da du während der Spielphase beigetreten bist, kannst du erst wieder in der nächsten Runde teilnehmen!");
         }
     }
 
@@ -134,14 +129,8 @@ public class BingoManager {
             @Override
             public void run() {
                 switch (gameState) {
-                    case START:
-
-                        break;
                     case INGAME:
                         itemManger.run();
-                        break;
-                    case END:
-
                         break;
                 }
                 timer.run();
@@ -177,17 +166,17 @@ public class BingoManager {
             @Override
             public void run() {
                 Bukkit.getOnlinePlayers().forEach(player -> {
-                    player.setLevel(time);
-                    player.setExp(time / 5f);
-                    player.sendMessage(ChatColor.GOLD + "Runde beginnt in " + time + " Sekunde(n)!");
+                    player.setLevel(countdown);
+                    player.setExp(countdown / 5f);
+                    player.sendMessage(ChatColor.GOLD + "Runde beginnt in " + countdown + " Sekunde(n)!");
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
                 });
-                if (time == 0) {
+                if (countdown == 0) {
                     startGame();
                     cancel();
                     return;
                 }
-                time--;
+                countdown--;
             }
         }.runTaskTimer(Main.getInstance(), 0, 20);
     }
@@ -215,7 +204,6 @@ public class BingoManager {
         Bukkit.getOnlinePlayers().forEach(player -> {
             Location spawn = Bukkit.getServer().getWorld("world").getSpawnLocation();
             player.teleport(spawn);
-            player.getInventory().clear();
             player.sendTitle(ChatColor.GOLD + "Team #" + getTeamManager().getIdByTeam(curTeam) + " hat gewonnen!", "by https://github.com/nils3005");
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.STRIKETHROUGH + "                                                                              ");

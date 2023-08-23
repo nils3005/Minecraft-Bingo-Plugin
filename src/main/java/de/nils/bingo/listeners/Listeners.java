@@ -85,7 +85,8 @@ public class Listeners implements Listener {
 
     /*
     Verhindert, dass Spieler vor Rundenstart vom Spawn weglaufen können.
-    */
+
+
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
@@ -93,6 +94,8 @@ public class Listeners implements Listener {
             event.setCancelled(true);
         }
     }
+
+     */
 
     /*
     Spieler werden nach dem Tod zum Spawn teleportiert (Geänderte Respawnpoints z.B. durch Betten könne dies
