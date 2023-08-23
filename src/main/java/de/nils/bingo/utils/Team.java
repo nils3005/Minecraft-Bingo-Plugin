@@ -1,5 +1,6 @@
 package de.nils.bingo.utils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -14,10 +15,10 @@ public class Team {
     Die Methode fügt einen Spieler dem Team hinzu.
      */
     public void addPlayer(Player player) {
-        if (members.contains(player)) {
-            player.sendMessage("Du bist bereits in diesem Team!");
+        if (members.contains(player.getPlayer())) {
+            player.sendMessage(ChatColor.RED + "Du bist bereits in diesem Team!");
         } else {
-            members.add(player);
+            members.add(player.getPlayer());
         }
     }
 
@@ -29,11 +30,11 @@ public class Team {
     }
 
     public boolean containsPlayer(Player player) {
-        return members.contains(player);
+        return members.contains(player.getPlayer());
     }
 
     public void removePlayer(Player player){
-        if (members.contains(player)){
+        if (members.contains(player.getPlayer())){
             members.remove(player);
         }
     }

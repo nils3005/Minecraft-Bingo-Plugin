@@ -37,10 +37,10 @@ public class BingoCommands implements CommandExecutor {
                         sender.sendMessage("Verwendung: /bingo team {Zahl}");
                     } else {
                         Player player = (Player) sender;
-                        Main.getBingoManger().getTeamManager().addPlayerToTeam(player, Main.getBingoManger().getTeamManager().getTeamById(args[1]));
+                        Main.getBingoManger().addPlayerToTeam(player, args[1].toString().toLowerCase());
                     }
                 } else {
-                    sender.sendMessage("Die Teamauswahl ist nur während der Startphase möglich!");
+                    sender.sendMessage(ChatColor.RED + "Die Teamauswahl ist nur während der Startphase möglich!");
                 }
                 break;
             }
@@ -49,6 +49,7 @@ public class BingoCommands implements CommandExecutor {
                 if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.INGAME) {
                     Player player = (Player) sender;
                     if (player.getWorld().getName().equals("world")) {
+                        player.sendMessage(ChatColor.GOLD + "Teleport zur Oberwelt...");
                         int x = (int) player.getLocation().getX();
                         int z = (int) player.getLocation().getZ();
                         int y = Bukkit.getWorld("world").getHighestBlockYAt(x, z);
@@ -61,12 +62,13 @@ public class BingoCommands implements CommandExecutor {
                 break;
             }
             case "help": {
-                sender.sendMessage("___________________________________________________________________");
-                sender.sendMessage(ChatColor.BOLD + "1. Wähle ein Team aus");
-                sender.sendMessage(ChatColor.BOLD + "2. Starte die Runde");
-                sender.sendMessage(ChatColor.BOLD + "Tipp: Mit /top kommst du zur Oberwelt zurück");
-                sender.sendMessage(ChatColor.BOLD + "Tipp: Achte auf die Rechtschreibung. Viel Spaß! ;)");
-                sender.sendMessage("___________________________________________________________________");
+                sender.sendMessage(ChatColor.STRIKETHROUGH + "                                                                              ");
+                sender.sendMessage("1. Wähle ein Team aus.");
+                sender.sendMessage("2. Warte bis ein Admin die Runde startet.");
+                sender.sendMessage("Tipp: Mit /bingo top kommst du zur Oberwelt zurück.");
+                sender.sendMessage("Tipp: Achte auf die Rechtschreibung bei Commands. Viel Spaß!");
+                sender.sendMessage(ChatColor.STRIKETHROUGH + "                                                                              ");
+                break;
             }
             default:
                 sendUsage(sender);
@@ -76,6 +78,6 @@ public class BingoCommands implements CommandExecutor {
     }
 
     public void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "Verwendung: /bingo start, /bingo team 1 " + ChatColor.UNDERLINE + "oder" + ChatColor.RESET + ChatColor.GOLD + ChatColor.BOLD + " 2, /bingo top");
+        sender.sendMessage(ChatColor.GOLD + "Befehle: /bingo help, /bingo team {Zahl}, /bingo top");
     }
 }

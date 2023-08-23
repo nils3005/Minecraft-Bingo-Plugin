@@ -1,25 +1,23 @@
 package de.nils.bingo.manager;
 
-import de.nils.bingo.Main;
-import de.nils.bingo.scoreboard.BingoScoreboard;
 import de.nils.bingo.utils.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TeamManager {
-    //private ArrayList<Team> teams = new ArrayList<>();
     private HashMap<String, Team> teams = new HashMap<>();
     private Team spectators = new Team();
 
-    /*
-    Zu Rundenstart werden alle Spieler dem Team "undefindedTeam" angefügt, sodass mindestens ein Team einen Spieler haben muss.
-    Danach werden Team 1 und Team 2 erzeugt und wiederum einer anderen Liste angefügt, die alle Teams verwaltet.
-     */
     public TeamManager() {
         teams.put("1", new Team());
         teams.put("2", new Team());
+        teams.put("3", new Team());
+        teams.put("4", new Team());
     }
 
     /*
@@ -27,7 +25,9 @@ public class TeamManager {
      */
     public Team getTeamByPlayer(Player player) {
         for (Team team : teams.values()) {
-            if (team.containsPlayer(player)) return team;
+            if (team.containsPlayer(player)){
+                return team;
+            }
         }
         return null;
     }
@@ -35,50 +35,54 @@ public class TeamManager {
     /*
     Fügt einen Spieler zu einem Team hinzu.
      */
-    public void addPlayerToTeam(Player player, Team team) {
-        if (team == null) player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Das ist kein gültiger Teamwert!");
+    public void addPlayerToTeam(Player player, String id) {
+        if (id.equals("spectators")){
+            spectators.addPlayer(player);
+            return;
+        }
+        Team team = teams.get(id);
+        if (team == null){
+            player.sendMessage(ChatColor.RED + "Das ist kein gültiger Teamwert!");
+            return;
+        }
         if (spectators.containsPlayer(player)){
             spectators.removePlayer(player);
         }
-
         Team cur = getTeamByPlayer(player);
-        if (cur != null) {
-            deletePlayerFromTeam(player, cur);
+        if (cur != null){
+            deletePlayerFromTeam(player, getIdByTeam(cur));
         }
-        teams.get(team).addPlayer(player);
-
-        //new BingoScoreboard(player).createStartScoreboard();
-        //Main.getBingoManger().getTablistManger().setAllPlayerTeams();
-    }
+        team.addPlayer(player);
+        player.sendMessage(ChatColor.GOLD + "Du bist nun in Team #" + getIdByTeam(team));
+        }
 
     /*
     Löscht einen Spieler aus seinem Team.
      */
-    public void deletePlayerFromTeam(Player player, Team team) {
-        teams.get(team).removePlayer(player);
+    public void deletePlayerFromTeam(Player player, String id) {
+        teams.get(id).removePlayer(player);
     }
 
     /*
     Liefert eine Liste aller Spieler eines im Parameter übergeben Teams.
      */
     public ArrayList<Player> getPlayersByTeam(Team team) {
-        teams.get(team).getPlayers();
-        return null;
+        String id = getIdByTeam(team);
+        return teams.get(id).getPlayers();
     }
 
     public String getIdByTeam(Team team){
-        for (Map.Entry<String, Team> cur : teams.entrySet()) {
-            if (Objects.equals(team, cur)) return cur.getKey();
+        String result = "NO_ID_FOUND";
+        for (Map.Entry<String, Team> entry : teams.entrySet()){
+            if (entry.getValue().equals(team)){
+                result = entry.getKey();
+            }
         }
-        return null;
+        return result;
     }
 
     public Collection<Team> getTeams() {
         return teams.values();
-    }
-
-    public Team getTeamById(String id){
-        return teams.get(id);
     }
 
     public Team getSpectators(){

@@ -38,11 +38,11 @@ public class ItemManger {
      */
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            Team curTeam = Main.getBingoManger().getTeamManager().getTeamByPlayer(player);
-            for (ItemStack slot : player.getInventory().getContents()) {
-                if (slot != null) {
+            if (!Main.getBingoManger().getTeamManager().getSpectators().containsPlayer(player)) {
+                Team curTeam = Main.getBingoManger().getTeamManager().getTeamByPlayer(player);
+                for (ItemStack slot : player.getInventory().getContents()) {
                     ArrayList<Material> itemsByTeam = getItemsFromTeam(curTeam); //zu findende Items
-                    if (itemsByTeam.contains(slot.getType())) {
+                    if (slot != null && itemsByTeam != null && itemsByTeam.contains(slot.getType())) {
                         itemsByTeam.remove(slot.getType());
                         foundItem(curTeam, slot.getType(), player);
                     }
@@ -54,20 +54,18 @@ public class ItemManger {
     /*
     Die Methode wird aufgerufen, wenn ein offenes Item des Teams aufgesammelt wurde.
     Es wird angegeben, um welches Item es sich handelt, wer es gefunden hat und wie viele Items übrig sind.
-    Schließlich wird das Scoreboard aktualisiert.
      */
     public void foundItem(Team team, Material material, Player player) {
-        int amountOfItemsLeft = 9 - getItemsFromTeam(team).size();
+        int amountOfItemsLeft = getItemsFromTeam(team).size();
         Main.getBingoManger().getTeamManager().getPlayersByTeam(team).forEach(curPlayer -> {
             if (Bukkit.getPlayer(curPlayer.getName()) != null) {
                 curPlayer.sendTitle(ChatColor.GOLD + Utils.getItemName(material), " wurde gefunden!");
                 curPlayer.playSound(curPlayer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             }
         });
-        Bukkit.broadcastMessage(player.getName() + " aus Team " + Main.getBingoManger().getTeamManager().getIdByTeam(team) + " hat " + Utils.getItemName(material) + " gefunden! " + amountOfItemsLeft + " / 9");
-        if (amountOfItemsLeft == 0){
-            Main.getBingoManger().endGame(team);
-        }
+        Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " aus Team " + Main.getBingoManger().getTeamManager().getIdByTeam(team) + " hat " + Utils.getItemName(material) + " gefunden! " + amountOfItemsLeft + " / 9");
+        if (amountOfItemsLeft == 0) Main.getBingoManger().endGame(team);
+        Main.getBingoManger().updateUI();
     }
 
     /*

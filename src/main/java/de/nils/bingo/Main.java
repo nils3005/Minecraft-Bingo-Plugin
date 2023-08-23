@@ -26,6 +26,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        /*
         try {
             File[] worlds = {new File(Bukkit.getWorldContainer(), "world"),
                     new File(Bukkit.getWorldContainer(), "world_nether"),
@@ -37,6 +38,7 @@ public final class Main extends JavaPlugin {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+         */
         //Bukkit.getServer().getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         //Bukkit.getServer().getWorld("world").setGameRule(GameRule.KEEP_INVENTORY, false);
     }

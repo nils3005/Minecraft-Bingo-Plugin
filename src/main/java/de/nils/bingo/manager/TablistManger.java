@@ -13,9 +13,9 @@ public class TablistManger {
      */
     public void setTablist(Player player) {
         player.setPlayerListHeaderFooter("" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH
-                + "                 " + ChatColor.DARK_GRAY + "[ " + ChatColor.GREEN + "Bingo"
+                + "                 " + ChatColor.DARK_GRAY + "[ " + ChatColor.GREEN + ChatColor.BOLD + "BINGO"
                 + ChatColor.DARK_GRAY + " ]" + ChatColor.DARK_GRAY + ChatColor.STRIKETHROUGH
-                + "                 ", "by https://github.com/nils3005");
+                + "                 ", ChatColor.GRAY + "https://github.com/nils3005");
     }
 
     /*
@@ -35,7 +35,7 @@ public class TablistManger {
             spectator = sb.registerNewTeam("9spectator");
         }
         spectator.setPrefix(ChatColor.GRAY + "Team -" + ChatColor.RESET + " | ");
-        if (Main.getBingoManger().getTeamManager().getTeamByPlayer(player) == Main.getBingoManger().getTeamManager().getSpectators()) {
+        if (Main.getBingoManger().getTeamManager().getSpectators().containsPlayer(player)) {
             spectator.addEntry(player.getName());
         }
         int i = 0;

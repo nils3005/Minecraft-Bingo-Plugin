@@ -1,16 +1,13 @@
 package de.nils.bingo.scoreboard;
 
 import de.nils.bingo.Main;
-import de.nils.bingo.manager.BingoManager;
 import de.nils.bingo.manager.TeamManager;
 import de.nils.bingo.utils.Team;
 import de.nils.bingo.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class BingoScoreboard extends ScoreboardBuilder {
@@ -19,8 +16,8 @@ public class BingoScoreboard extends ScoreboardBuilder {
     Die Klasse erbt von ScoreboardBuilder, weshalb Methoden überschrieben werden müssen.
     Außerdem wird die Methode "run" aufgerufen.
      */
-    public BingoScoreboard(Player player) {
-        super(player, ChatColor.GREEN.toString() + ChatColor.BOLD + "BINGO");
+    public BingoScoreboard(Player player, String disyplayName) {
+        super(player, disyplayName);
         run();
     }
 
@@ -34,22 +31,22 @@ public class BingoScoreboard extends ScoreboardBuilder {
 
     /*
     Erzeugt ein Scoreboard für die Teamauswahlphase.
-     */
+    */
     @Override
     public void createStartScoreboard() {
         TeamManager teamManager = Main.getBingoManger().getTeamManager();
-        if (teamManager.getTeamByPlayer(player) != null) {
-            setScore(ChatColor.BOLD + "Team " + Main.getBingoManger().getTeamManager().getIdByTeam(Main.getBingoManger().getTeamManager().getTeamByPlayer(player)) + ChatColor.RESET, 7);
+        Team team = teamManager.getTeamByPlayer(player);
+        setScore(ChatColor.DARK_BLUE + "  ", 15);
+        if (team != null) {
+            String id = teamManager.getIdByTeam(team);
+            setScore("Team #" + id + ChatColor.RESET, 14);
         } else {
-            setScore(ChatColor.BOLD + "Team " + "-" + ChatColor.RESET, 7);
+            setScore("Team " + "-" + ChatColor.RESET, 14);
         }
-        setScore(ChatColor.DARK_GREEN.toString(), 6);
-        setScore(ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Ziel" + ChatColor.RESET, 5);
-        setScore(ChatColor.DARK_PURPLE.toString(), 4);
-        setScore("Sammelt alle Items", 3);
-        setScore("aus dem Scoreboard,", 2);
-        setScore("um zu gewinnen", 1);
+        setScore(ChatColor.DARK_PURPLE + "  ", 13);
+        setScore(ChatColor.GRAY + "Waiting...", 12);
     }
+
 
     /*
     Erzeugt ein Scoreboard für das Rundenende.
@@ -59,8 +56,8 @@ public class BingoScoreboard extends ScoreboardBuilder {
             setScore(ChatColor.DARK_PURPLE + " ", 5);
             setScore(ChatColor.BOLD.toString() + ChatColor.GOLD + "Danke für's Spielen!", 4);
             setScore(ChatColor.DARK_BLUE.toString(), 3); //Platzhalter
-            setScore("Bei Bugs gerne an", 2);
-            setScore("einen Admin wenden.", 1);
+            setScore(ChatColor.GRAY + "Bei Bugs bitte an", 2);
+            setScore(ChatColor.GRAY + "einen Admin wenden!", 1);
         }
     }
 
@@ -69,22 +66,26 @@ public class BingoScoreboard extends ScoreboardBuilder {
      */
     public void createInGameScoreboard() {
         if (player != null) {
+            TeamManager teamManager = Main.getBingoManger().getTeamManager();
             ArrayList<ArrayList<Material>> list = new ArrayList<>();
-            Main.getBingoManger().getTeamManager().getTeams().forEach(team -> {
+            teamManager.getTeams().forEach(team -> {
                 list.add(Main.getBingoManger().getItemManger().getItemsFromTeam(team));
             });
-            int index = 14;
-            setScore(ChatColor.BOLD + "Platz " + Main.getBingoManger().getItemManger().getRankingPosition(Main.getBingoManger().getTeamManager().getTeamByPlayer(player)), index--);
+            int index = 15;
             setScore(ChatColor.DARK_AQUA.toString(), index--); //Platzhalter
             for (int i = 0; i < list.size(); i++) {
-                setScore(ChatColor.RESET + ChatColor.BOLD.toString() + "#" + i + ChatColor.RESET + " | " + (9 - list.get(i).size()) + " / 9" + ChatColor.RESET, index--);
+                setScore(ChatColor.RESET + "#" + (i + 1) + ChatColor.RESET + " | " + (9 - list.get(i).size()) + " / 9" + ChatColor.RESET, index--);
             }
             setScore(ChatColor.DARK_PURPLE.toString(), index--); //Platzhalter
 
             ArrayList<Material> allItems = Main.getBingoManger().getItemManger().getStartItems();
-            ArrayList<Material> teamItems = Main.getBingoManger().getItemManger().getItemsFromTeam(Main.getBingoManger().getTeamManager().getTeamByPlayer(player));
+            ArrayList<Material> teamItems = Main.getBingoManger().getItemManger().getItemsFromTeam(teamManager.getTeamByPlayer(player));
 
             for (Material item : allItems) {
+                if (teamManager.getSpectators().containsPlayer(player)) { //Falls Spectator
+                    setScore(ChatColor.GRAY + Utils.getItemName(item) + ChatColor.RESET, index--);
+                    continue;
+                }
                 if (teamItems.contains(item)) {
                     setScore(ChatColor.RED + Utils.getItemName(item) + ChatColor.RESET, index--); //Falls von Team nicht gefunden
                 } else {
