@@ -19,31 +19,6 @@ public class BingoCommands implements CommandExecutor {
             return false;
         }
         switch (args[0].toLowerCase()) {
-            case "start": {
-                if (sender.isOp()) {
-                    if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
-                        Main.getBingoManger().startGame();
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Die Runde wurde bereits gestartet!");
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Du hast keine Berechtigung die Runde zu starten!");
-                }
-                break;
-            }
-            case "team": {
-                if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
-                    if (args.length != 2) {
-                        sender.sendMessage("Verwendung: /bingo team {Zahl}");
-                    } else {
-                        Player player = (Player) sender;
-                        Main.getBingoManger().addPlayerToTeam(player, args[1].toString().toLowerCase());
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Die Teamauswahl ist nur während der Startphase möglich!");
-                }
-                break;
-            }
             case "top": {
                 if (!(sender instanceof Player)) return false;
                 if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.INGAME) {
@@ -78,6 +53,6 @@ public class BingoCommands implements CommandExecutor {
     }
 
     public void sendUsage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "Befehle: /bingo help, /bingo team {Zahl}, /bingo top");
+        sender.sendMessage(ChatColor.GOLD + "Befehle: /bingo help, /bingo top");
     }
 }

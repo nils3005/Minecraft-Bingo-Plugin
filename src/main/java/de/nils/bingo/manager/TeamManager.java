@@ -1,5 +1,6 @@
 package de.nils.bingo.manager;
 
+import de.nils.bingo.Main;
 import de.nils.bingo.utils.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,6 +55,7 @@ public class TeamManager {
         }
         team.addPlayer(player);
         player.sendMessage(ChatColor.GOLD + "Du bist nun in Team #" + getIdByTeam(team));
+        Main.getBingoManger().updateUI();
         }
 
     /*

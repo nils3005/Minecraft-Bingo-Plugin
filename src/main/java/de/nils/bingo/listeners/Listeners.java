@@ -6,13 +6,13 @@ import org.bukkit.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRecipeDiscoverEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
 
 public class Listeners implements Listener {
     @EventHandler
@@ -30,19 +30,47 @@ public class Listeners implements Listener {
         }
     }
 
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getItem() != null) {
+            Main.getBingoManger().onInteractEvent(event);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClickEvent(InventoryClickEvent event) {
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getCurrentItem() != null) {
+            Main.getBingoManger().inventoryClickEvent(event);
+        }
+    }
+
     /*
     Spieler können nur in der Spielphase Schaden erleiden.
      */
     @EventHandler
-    public void onPlayerDamageOnStart(EntityDamageEvent event){
-        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME){
+    public void onPlayerDamageOnStart(EntityDamageEvent event) {
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDropBlock(PlayerDropItemEvent event) {
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
             event.setCancelled(true);
         }
     }
 
     /*
     Verhindert, dass Spieler vor Rundenstart vom Spawn weglaufen können.
-    */
+
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
@@ -51,8 +79,10 @@ public class Listeners implements Listener {
         }
     }
 
+     */
+
     @EventHandler
-    public void discoverRecipe(PlayerRecipeDiscoverEvent event){
+    public void discoverRecipe(PlayerRecipeDiscoverEvent event) {
         event.setCancelled(true);
     }
 
