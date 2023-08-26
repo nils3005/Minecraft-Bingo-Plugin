@@ -16,9 +16,9 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.swing.plaf.ButtonUI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class BingoManager {
     private TeamManager teamManager;
@@ -59,7 +59,7 @@ public class BingoManager {
         if (teamManager.getTeamByPlayer(event.getPlayer()) == null) {
             teamManager.addPlayerToTeam(event.getPlayer(), "spectators");
         }
-        giveLobbyitems(event.getPlayer());
+        giveLobbyItems(event.getPlayer());
         Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1));
     }
 
@@ -77,7 +77,7 @@ public class BingoManager {
         }
     }
 
-    private void giveLobbyitems(Player player) {
+    private void giveLobbyItems(Player player) {
         player.getInventory().clear();
         ItemStack i = new ItemStack(Material.WHITE_BED);
         ItemMeta im = i.getItemMeta();
@@ -102,26 +102,26 @@ public class BingoManager {
         }
         if (event.getPlayer().isOp()
                 && (event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Start")
-                || event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Stop"))){
-            roundControlItemClicked();
+                || event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Stop"))) {
+            roundControlItemClicked(event);
         }
     }
 
     /*
     Gibt den Admins ein Item je nach Situation, um die Runde zu starten oder den Startvorgang zu pausieren.
      */
-    private void roundControlItemClicked() {
+    private void roundControlItemClicked(PlayerInteractEvent event) {
         curCountdown = initialCountdownTime;
-        isCountdownRunning ^= true; //Dreht den Wert bei Aufruf: true → false, false → true oder: a = !a;
+        isCountdownRunning ^= true; //true → false, false → true genauso wie a = !a;
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (isCountdownRunning && player.isOp()){
+            if (isCountdownRunning && player.isOp()) {
                 ItemStack itemStack = new ItemStack(Material.GRAY_DYE);
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + "Stop");
                 itemStack.setItemMeta(itemMeta);
                 player.getInventory().setItem(8, itemStack);
-            }else{
-                if(player.isOp()){
+            } else {
+                if (player.isOp()) {
                     ItemStack itemStack = new ItemStack(Material.LIME_DYE);
                     ItemMeta itemMeta = itemStack.getItemMeta();
                     itemMeta.setDisplayName(ChatColor.GOLD + "Start");
@@ -140,17 +140,13 @@ public class BingoManager {
     Erzeugt eine grafische Oberfläche für die Teamauswahl.
      */
     private void createTeamSelectionGUI(PlayerInteractEvent event) {
-        HashMap<Integer, ItemStack> map = new HashMap<>();
+        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.GOLD + "Teamauswahl");
         for (int i = 0; i < teamManager.getTeams().size(); i++) {
             ItemStack itemStack = new ItemStack(Material.RED_BED);
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName("Team #" + (i + 1));
+            itemMeta.setDisplayName(ChatColor.GOLD + "Team #" + (i + 1));
             itemStack.setItemMeta(itemMeta);
-            map.put(i, itemStack);
-        }
-        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.GOLD + "Teamauswahl");
-        for (Map.Entry<Integer, ItemStack> entry : map.entrySet()) {
-            inventory.setItem(entry.getKey(), entry.getValue());
+            inventory.setItem(i, itemStack);
         }
         event.getPlayer().openInventory(inventory);
     }
@@ -228,11 +224,11 @@ public class BingoManager {
             player.setGameMode(GameMode.SURVIVAL);
             player.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "Die Runde beginnt. Viel Erfolg!");
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
+            if (teamManager.getSpectators().containsPlayer(player)){
+                player.setGameMode(GameMode.SPECTATOR);
+                player.sendMessage(ChatColor.RED + "Da du kein Team gewählt hast, bist du nun Spectator!");
+            }
         });
-        for (Player cur : getTeamManager().getSpectators().getPlayers()) {
-            cur.setGameMode(GameMode.SPECTATOR);
-            cur.sendMessage(ChatColor.RED + "Da du kein Team gewählt hast, bist du nun Spectator!");
-        }
         gameState = BingoGameState.INGAME;
         updateUI();
     }

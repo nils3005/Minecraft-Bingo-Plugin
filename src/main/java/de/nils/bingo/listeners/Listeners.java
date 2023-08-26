@@ -14,6 +14,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
+import java.util.concurrent.TimeUnit;
+
 public class Listeners implements Listener {
     /*
     Verwaltet das JoinEvent von einem Spieler.
@@ -36,8 +38,11 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getItem() != null)
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START
+                && event.getItem() != null
+                && event.getPlayer().getInventory().contains(event.getItem())){
             Main.getBingoManger().onInteractEvent(event);
+        }
     }
 
     /*
@@ -53,7 +58,7 @@ public class Listeners implements Listener {
     Spieler können nur in der Spielphase Schaden erleiden.
      */
     @EventHandler
-    public void onPlayerDamageOnStart(EntityDamageEvent event) {
+    public void onPlayerDamageOnStartAndEnd(EntityDamageEvent event) {
         if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) event.setCancelled(true);
     }
 
@@ -79,8 +84,8 @@ public class Listeners implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst dich erst bewegen, sobald die Runde startet!");
-            event.setCancelled(true);
+            //event.getPlayer().sendMessage(ChatColor.RED + "Du kannst dich erst bewegen, sobald die Runde startet!");
+            //event.setCancelled(true);
         }
     }
 
