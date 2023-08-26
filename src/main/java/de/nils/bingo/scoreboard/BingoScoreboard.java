@@ -39,9 +39,9 @@ public class BingoScoreboard extends ScoreboardBuilder {
         setScore(ChatColor.DARK_BLUE + "  ", 15);
         if (team != null) {
             String id = teamManager.getIdByTeam(team);
-            setScore("Team #" + id + ChatColor.RESET, 14);
+            setScore(ChatColor.RESET + "Team " + ChatColor.YELLOW + "#" + id + ChatColor.RESET, 14);
         } else {
-            setScore("Team " + "-" + ChatColor.RESET, 14);
+            setScore(ChatColor.GRAY + "Kein Team" + ChatColor.RESET, 14);
         }
         setScore(ChatColor.DARK_PURPLE + "  ", 13);
         setScore(ChatColor.GRAY + "Waiting...", 12);
@@ -68,13 +68,11 @@ public class BingoScoreboard extends ScoreboardBuilder {
         if (player != null) {
             TeamManager teamManager = Main.getBingoManger().getTeamManager();
             ArrayList<ArrayList<Material>> list = new ArrayList<>();
-            teamManager.getTeams().forEach(team -> {
-                list.add(Main.getBingoManger().getItemManger().getItemsFromTeam(team));
-            });
+            teamManager.getTeams().forEach(team -> list.add(Main.getBingoManger().getItemManger().getItemsFromTeam(team)));
             int index = 15;
             setScore(ChatColor.DARK_AQUA.toString(), index--); //Platzhalter
             for (int i = 0; i < list.size(); i++) {
-                setScore(ChatColor.RESET + "#" + (i + 1) + ChatColor.RESET + " | " + (9 - list.get(i).size()) + " / 9" + ChatColor.RESET, index--);
+                setScore(ChatColor.YELLOW + "#" + (i + 1)  + ChatColor.GRAY + " | " + ChatColor.BLUE + (9 - list.get(i).size()) + " / 9" + ChatColor.RESET, index--);
             }
             setScore(ChatColor.DARK_PURPLE.toString(), index--); //Platzhalter
 

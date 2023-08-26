@@ -34,7 +34,7 @@ public class TablistManger {
         if (spectator == null) {
             spectator = sb.registerNewTeam("9spectator");
         }
-        spectator.setPrefix(ChatColor.GRAY + "Team -" + ChatColor.RESET + " | ");
+        spectator.setPrefix(ChatColor.GRAY + " Kein Team" + ChatColor.RESET + " | ");
         if (Main.getBingoManger().getTeamManager().getSpectators().containsPlayer(player)) {
             spectator.addEntry(player.getName());
         }
@@ -44,7 +44,7 @@ public class TablistManger {
             if (team == null) {
                 team = sb.registerNewTeam(i + "t" + (i + 1));
             }
-            team.setPrefix(ChatColor.YELLOW + "#" + (i + 1) + ChatColor.GRAY + " | " + ChatColor.RESET);
+            team.setPrefix(ChatColor.YELLOW + " #" + (i + 1) + ChatColor.GRAY + " | " + ChatColor.RESET);
             for (Player entry : cur.getPlayers()) {
                 team.addEntry(entry.getName());
             }

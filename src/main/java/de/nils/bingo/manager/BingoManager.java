@@ -103,14 +103,14 @@ public class BingoManager {
         if (event.getPlayer().isOp()
                 && (event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Start")
                 || event.getItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Stop"))){
-            roundControlItemClicked(event);
+            roundControlItemClicked();
         }
     }
 
     /*
     Gibt den Admins ein Item je nach Situation, um die Runde zu starten oder den Startvorgang zu pausieren.
      */
-    private void roundControlItemClicked(PlayerInteractEvent event) {
+    private void roundControlItemClicked() {
         curCountdown = initialCountdownTime;
         isCountdownRunning ^= true; //Dreht den Wert bei Aufruf: true → false, false → true oder: a = !a;
         Bukkit.getOnlinePlayers().forEach(player -> {
