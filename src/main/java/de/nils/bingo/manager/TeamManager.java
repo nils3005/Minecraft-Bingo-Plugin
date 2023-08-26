@@ -95,7 +95,7 @@ public class TeamManager {
         return teams.get(number);
     }
 
-    public boolean getTeamByPlayerName(Player player) {
+    public boolean replaceOldPlayerInstance(Player player) {
         for (Team team : teams.values()) {
             for (Player member : team.getPlayers()) {
                 if (member.getName().equals(player.getName())){
@@ -108,7 +108,7 @@ public class TeamManager {
         return false;
     }
 
-    public void removeSpectatorInstance(Player player){
+    public void replaceOldSpectatorInstace(Player player){
         for (Player member : spectators.getPlayers()) {
             if (member.getName().equals(player.getName())){
                 spectators.removePlayer(member);

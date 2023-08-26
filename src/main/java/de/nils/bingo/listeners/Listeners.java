@@ -28,9 +28,7 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
-            event.setCancelled(true);
-        }
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) event.setCancelled(true);
     }
 
     /*
@@ -38,9 +36,8 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getItem() != null) {
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getItem() != null)
             Main.getBingoManger().onInteractEvent(event);
-        }
     }
 
     /*
@@ -48,9 +45,8 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event) {
-        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getCurrentItem() != null) {
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getCurrentItem() != null)
             Main.getBingoManger().inventoryClickEvent(event);
-        }
     }
 
     /*
@@ -58,9 +54,7 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onPlayerDamageOnStart(EntityDamageEvent event) {
-        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
-            event.setCancelled(true);
-        }
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) event.setCancelled(true);
     }
 
     /*
@@ -68,9 +62,7 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onDropBlock(PlayerDropItemEvent event) {
-        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
-            event.setCancelled(true);
-        }
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) event.setCancelled(true);
     }
 
     /*
@@ -78,15 +70,12 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) {
-            event.setCancelled(true);
-        }
+        if (Main.getBingoManger().getGameState() != BingoManager.BingoGameState.INGAME) event.setCancelled(true);
     }
 
     /*
     Verhindert, dass Spieler vor Rundenstart vom Spawn weglaufen können.
-
-
+     */
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
@@ -94,8 +83,6 @@ public class Listeners implements Listener {
             event.setCancelled(true);
         }
     }
-
-     */
 
     /*
     Spieler werden nach dem Tod zum Spawn teleportiert (Geänderte Respawnpoints z.B. durch Betten könne dies

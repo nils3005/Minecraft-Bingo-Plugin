@@ -44,7 +44,7 @@ public class TablistManger {
             if (team == null) {
                 team = sb.registerNewTeam(i + "t" + (i + 1));
             }
-            team.setPrefix("Team #" + (i + 1) + " | ");
+            team.setPrefix(ChatColor.YELLOW + "#" + (i + 1) + ChatColor.GRAY + " | " + ChatColor.RESET);
             for (Player entry : cur.getPlayers()) {
                 team.addEntry(entry.getName());
             }
