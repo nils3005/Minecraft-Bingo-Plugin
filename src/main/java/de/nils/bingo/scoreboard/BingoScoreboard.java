@@ -57,7 +57,7 @@ public class BingoScoreboard extends ScoreboardBuilder {
             setScore(ChatColor.BOLD.toString() + ChatColor.GOLD + "Danke für's Spielen!", 4);
             setScore(ChatColor.DARK_BLUE.toString(), 3); //Platzhalter
             setScore(ChatColor.GRAY + "Bei Bugs bitte an", 2);
-            setScore(ChatColor.GRAY + "einen Admin wenden!", 1);
+            setScore(ChatColor.GRAY + "einen Admin wenden", 1);
         }
     }
 

@@ -13,6 +13,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +51,8 @@ public class Listeners implements Listener {
      */
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event) {
-        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START && event.getCurrentItem() != null)
+        if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START
+                && event.getCurrentItem() != null)
             Main.getBingoManger().inventoryClickEvent(event);
     }
 
@@ -92,10 +94,19 @@ public class Listeners implements Listener {
     /*
     Spieler werden nach dem Tod zum Spawn teleportiert (Geänderte Respawnpoints z.B. durch Betten könne dies
     evtl. überschreiben).
+    KeepInventory und KeepExp wird aktiviert, damit Items und Xp nicht verloren werden.
      */
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         event.getEntity().teleport(Bukkit.getWorld("world").getSpawnLocation());
+        event.setKeepInventory(true);
+        event.setKeepLevel(true);
+        event.getDrops().clear();
+    }
+
+    @EventHandler
+    public void onAdvancement(PlayerAdvancementDoneEvent event){
+
     }
 
     /*

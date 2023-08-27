@@ -144,7 +144,7 @@ public class BingoManager {
         for (int i = 0; i < teamManager.getTeams().size(); i++) {
             ItemStack itemStack = new ItemStack(Material.RED_BED);
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(ChatColor.GOLD + "Team #" + (i + 1));
+            itemMeta.setDisplayName("Team #" + (i + 1));
             itemStack.setItemMeta(itemMeta);
             inventory.setItem(i, itemStack);
         }
