@@ -42,6 +42,7 @@ public class Listeners implements Listener {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START
                 && event.getItem() != null
                 && event.getPlayer().getInventory().contains(event.getItem())){
+            event.setCancelled(true);
             Main.getBingoManger().onInteractEvent(event);
         }
     }

@@ -56,7 +56,7 @@ public class Timer {
                 if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Willkommen! /bingo help für Hilfe"));
                 } else if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.END) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Server neustarten für neue Runde!"));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Server neustarten für eine neue Runde"));
                 }
             }
         }

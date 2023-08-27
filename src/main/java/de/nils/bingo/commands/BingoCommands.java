@@ -37,12 +37,11 @@ public class BingoCommands implements CommandExecutor {
                 break;
             }
             case "help": {
-                sender.sendMessage(ChatColor.STRIKETHROUGH + "                                                                              ");
+                sender.sendMessage(ChatColor.GREEN.toString() + ChatColor.STRIKETHROUGH + "                                                                              ");
                 sender.sendMessage("1. Wähle ein Team aus.");
                 sender.sendMessage("2. Warte bis ein Admin die Runde startet.");
                 sender.sendMessage("Tipp: Mit /bingo top kommst du zur Oberwelt zurück.");
-                sender.sendMessage("Tipp: Achte auf die Rechtschreibung bei Commands. Viel Spaß!");
-                sender.sendMessage(ChatColor.STRIKETHROUGH + "                                                                              ");
+                sender.sendMessage(ChatColor.GREEN.toString() + ChatColor.STRIKETHROUGH + "                                                                              ");
                 break;
             }
             default:

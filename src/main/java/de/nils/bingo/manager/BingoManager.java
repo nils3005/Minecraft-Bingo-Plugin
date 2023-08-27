@@ -130,7 +130,7 @@ public class BingoManager {
                 }
                 player.setLevel(0);
                 player.setExp(1f);
-                player.sendMessage(ChatColor.GOLD + "Der Rundenstart wurde unterbrochen!");
+                player.sendMessage(ChatColor.RED + "Der Rundenstart wurde unterbrochen!");
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1, 1);
             }
         });
@@ -173,7 +173,7 @@ public class BingoManager {
                             Bukkit.getOnlinePlayers().forEach(player -> {
                                 player.setLevel(curCountdown);
                                 player.setExp(curCountdown / 5f);
-                                player.sendMessage(ChatColor.GOLD + "Runde beginnt in " + curCountdown + " Sekunde(n)!");
+                                player.sendMessage(ChatColor.GRAY + "Die Runde startet in " + curCountdown + " Sekunde(n)");
                                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
                             });
                             if (curCountdown == 0) {
@@ -224,7 +224,7 @@ public class BingoManager {
             player.setGameMode(GameMode.SURVIVAL);
             player.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "Die Runde beginnt. Viel Erfolg!");
             player.playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
-            if (teamManager.getSpectators().containsPlayer(player)){
+            if (teamManager.getSpectators().containsPlayer(player)) {
                 player.setGameMode(GameMode.SPECTATOR);
                 player.sendMessage(ChatColor.RED + "Da du kein Team gewählt hast, bist du nun Spectator!");
             }
