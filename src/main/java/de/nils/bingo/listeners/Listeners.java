@@ -87,8 +87,8 @@ public class Listeners implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (Main.getBingoManger().getGameState() == BingoManager.BingoGameState.START) {
-            //event.getPlayer().sendMessage(ChatColor.RED + "Du kannst dich erst bewegen, sobald die Runde startet!");
-            //event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst dich erst bewegen, sobald die Runde startet!");
+            event.setCancelled(true);
         }
     }
 
@@ -103,11 +103,6 @@ public class Listeners implements Listener {
         event.setKeepInventory(true);
         event.setKeepLevel(true);
         event.getDrops().clear();
-    }
-
-    @EventHandler
-    public void onAdvancement(PlayerAdvancementDoneEvent event){
-
     }
 
     /*

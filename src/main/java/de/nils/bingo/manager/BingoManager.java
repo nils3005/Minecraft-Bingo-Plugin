@@ -77,6 +77,10 @@ public class BingoManager {
         }
     }
 
+    /*
+    Gibt den Spielern ein Item zur Teamauswahl. Alle Admin bekommen ein Item, um die Runde zu starten, bzw.
+    zu stoppen.
+     */
     private void giveLobbyItems(Player player) {
         player.getInventory().clear();
         ItemStack i = new ItemStack(Material.WHITE_BED);
@@ -163,6 +167,9 @@ public class BingoManager {
         }
     }
 
+    /*
+    Die Methode implementiert ein Runnable. Verwaltet den Startcountdown, Timer und ItemManger.
+     */
     public void update() {
         new BukkitRunnable() {
             @Override
@@ -192,6 +199,9 @@ public class BingoManager {
         }.runTaskTimer(Main.getInstance(), 20, 20);
     }
 
+    /*
+    Die Methode aktualisiert das Userinterface der Spieler.
+     */
     public void updateUI() {
         Bukkit.getOnlinePlayers().forEach(player -> {
             switch (gameState) {
@@ -215,6 +225,9 @@ public class BingoManager {
         tablistManger.setAllPlayerTeams();
     }
 
+    /*
+    Die Methode wird nach Ablauf des Startcountdowns aufgerufen und leitet die Runde ein.
+     */
     public void startGame() {
         itemManger.start();
         timer.setRunning(true);
@@ -233,6 +246,9 @@ public class BingoManager {
         updateUI();
     }
 
+    /*
+    Die Methode wird aufgerufen, um eine Runde zu beenden.
+     */
     public void endGame(Team curTeam) {
         timer.setRunning(false);
         Bukkit.getOnlinePlayers().forEach(player -> {
@@ -250,6 +266,9 @@ public class BingoManager {
         updateUI();
     }
 
+    /*
+    Die Methode übergibt dem TeamManager einen Spieler. Danach wird die UI aktualisiert.
+     */
     public void addPlayerToTeam(Player player, String id) {
         teamManager.addPlayerToTeam(player, id);
         player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
